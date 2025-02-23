@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Voice Actor Map for {{ character }}</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='jquery.orgchart.css')}}">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <style>
+        
+        td {
+            vertical-align: top;
+            
+        }
+        img {
+            width: 100px;
+            height: auto;
+        }
+        li {
+            overflow-wrap: break-word;
+        }
+        ul li{
+            list-style: none;
+            flex: 1 0 33.33%;
+        }
+        ul {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 0%;
+        }
+        th, td {
+            
+            border-right: 1px solid;
+            border-top: 1px solid;
+            border-left: 1px solid;
+        }
+        th {
+            width: 500px;
+        }
+        table {
+            text-align: center;
+            width: max-content;
+            margin: auto;
+        }
+        </style>
+</head>
+<body>
+    <h1>Voice Actor Map for "{{ character }}"</h1>
+    <table >
+        <tr>
+            {% for actor in mind_map_data.children %}
+            <th>
+                <div class="actor-name">{{ actor.name }}</div> 
+                <div class="actor-img"><img src="{{actor.img}}" alt=""></div>
+            </th>
+            {% endfor %}
+        </tr>
+        <tr>
+        {% for actor in mind_map_data.children %}
+            <td>
+                <ul>
+                {% for role in actor.children %}
+                <li>
+                    <div class="role-name">
+                    <p style="font-weight:bold; margin: 0%;">Character</p>
+                    {{role.name}}
+                    </div>
+                    <div class="role-title">
+                        <p style="font-weight:bold; margin: 0%;">Anime</p>
+                        {{role.title}}
+                        </div>
+                    <div class="role-img">
+                        <img src="{{role.img}}" alt="">
+                        </div>
+                </li>
+                
+                {% endfor %}
+                </ul>
+            </td>
+        {% endfor %}
+        </tr>
+    </table>
+    <script>
+    </script>
+</body>
+</html>

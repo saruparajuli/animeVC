@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Anime Voice Actor Mind Map</title>
+    <style>
+      ul {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 0%;
+            width: 850px;
+            margin: auto;
+            text-align: center;
+        }
+        ul li{
+            list-style: none;
+            flex: 1 0 33.33%;
+        }
+        img {
+            width: 100px;
+            height: auto;
+        }
+    </style>
+  </head>
+  <body>
+    <h1 style="text-align: center;">Search for an Anime Character</h1>
+    <form style="text-align: center;" action="/search" method="post">
+      <input type="text" name="character" placeholder="Enter anime character name" required>
+      <input type="submit" value="Search">
+    </form>
+    <ul>
+    {% for link in links %}
+      
+        <li>
+          <div><a href="/mindmap?id={{link[0]}}&name={{link[1]}}">
+            <img src="{{ link[2] }}" alt="">
+          
+          
+            <p>{{link[1]}}</p></a>
+      
+          </div>
+        </li>
+          
+    {% endfor %}
+  </ul>
+  </body>
+</html>
