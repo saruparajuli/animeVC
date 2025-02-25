@@ -6,7 +6,12 @@
     <link rel="stylesheet" href="{{url_for('static', filename='jquery.orgchart.css')}}">
     <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
-        
+        h1 {
+            text-align: center;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
         td {
             vertical-align: top;
             
@@ -32,25 +37,35 @@
             border-right: 1px solid;
             border-top: 1px solid;
             border-left: 1px solid;
+            max-width: 450px;
         }
-        th {
-            width: 500px;
-        }
+        
         table {
             text-align: center;
-            width: max-content;
             margin: auto;
+            width: max-content;
         }
         </style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z56SD7N1NK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z56SD7N1NK');
+</script>
+
 </head>
 <body>
     <h1>Voice Actor Map for "{{ character }}"</h1>
     <table >
         <tr>
             {% for actor in mind_map_data.children %}
-            <th>
+            <th style="max-width: 450px">
                 <div class="actor-name">{{ actor.name }}</div> 
                 <div class="actor-img"><img src="{{actor.img}}" alt=""></div>
+                <div class="actor-cat">{{ actor.category }}</div>
             </th>
             {% endfor %}
         </tr>

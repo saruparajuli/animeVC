@@ -1,8 +1,15 @@
 <!doctype html>
 <html>
   <head>
-    <title>Anime Voice Actor Mind Map</title>
+    <title>Anime Voice Actor Finder</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
     <style>
+      body {
+            font-family: 'Roboto', sans-serif;
+        }
+      input {
+            font-size: 24px;
+        }
       ul {
             display: flex;
             flex-wrap: wrap;
@@ -20,18 +27,28 @@
             height: auto;
         }
     </style>
-  </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z56SD7N1NK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z56SD7N1NK');
+</script>  
+</head>
   <body>
-    <h1 style="text-align: center;">Search for an Anime Character</h1>
+    <h1 style="text-align: center;">Anime Voice Actor Finder</h1>
     <form style="text-align: center;" action="/search" method="post">
-      <input type="text" name="character" placeholder="Enter anime character name" required>
+      <input type="text" name="character" placeholder="Enter character..." required>
       <input type="submit" value="Search">
     </form>
+    <br>
     <ul>
     {% for link in links %}
       
         <li>
-          <div><a href="/mindmap?id={{link[0]}}&name={{link[1]}}">
+          <div><a href="/mindmap/{{link[0]}}/{{link[1]}}">
             <img src="{{ link[2] }}" alt="">
           
           

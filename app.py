@@ -1,8 +1,11 @@
 from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
+from flask_caching import Cache
 
 app = Flask(__name__)
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache'})
+cache.init_app(app)
 
 HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -120,10 +123,11 @@ def search():
     mind_map = build_mind_map(voice_actors)
     return render_template("mindmap.html", mind_map_data=mind_map, character=character)
 
-@app.route("/mindmap", methods=["GET"])
-def build():
-    charID = request.args.get('id')
-    charName = request.args.get('name')
+@app.route("/mindmap/<id>/<name>", methods=["GET"])
+@cache.cached(timeout=2592000)
+def build(id,name):
+    charID = str(id)
+    charName = str(name)
     voice_actors = scrape_character_page(charID)
     mind_map = build_mind_map(voice_actors)
     return render_template("mindmap.html", mind_map_data=mind_map, character=charName)
