@@ -13,7 +13,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h1>Anime Ratings and Number of Episodes For {{ selectedSeason }}</h1>
+    <h1>Anime Ratings and Number of Episodes</h1>
     <form action="/graph" method="POST">
         <label for="date">Season</label>
         <select style="font-size: 20px;" name="date" onchange="this.form.submit()">
@@ -23,6 +23,7 @@
             {% endfor %}
         </select>
       </form>
+    <h1>{{ selectedSeason }}</h1>
     <h2>Popularity</h2>
     <div style="width: 100%;"><canvas id="membersChart" width="400" height="900"></canvas></div>
     <h2>Ratings</h2>
