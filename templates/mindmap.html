@@ -33,13 +33,10 @@
             border-top: 1px solid;
             border-left: 1px solid;
         }
-        th {
-            width: 500px;
-        }
         table {
             text-align: center;
-            width: max-content;
             margin: auto;
+            width: max-content;
         }
         </style>
 </head>
@@ -48,7 +45,7 @@
     <table >
         <tr>
             {% for actor in mind_map_data.children %}
-            <th>
+            <th style="width: 450px;">
                 <div class="actor-name">{{ actor.name }}</div> 
                 <div class="actor-img"><img src="{{actor.img}}" alt=""></div>
             </th>

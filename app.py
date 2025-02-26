@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
+import io
+import base64
 
 app = Flask(__name__)
 
@@ -127,6 +130,57 @@ def build():
     voice_actors = scrape_character_page(charID)
     mind_map = build_mind_map(voice_actors)
     return render_template("mindmap.html", mind_map_data=mind_map, character=charName)
+
+
+@app.route('/graph', methods=["GET", "POST"])
+def graph():
+
+    seasonListUrl = 'https://myanimelist.net/anime/season/archive'
+    season_search_resp = requests.get(seasonListUrl, headers=HEADERS)
+    search_soup = BeautifulSoup(season_search_resp.text, "html.parser")
+    table = search_soup.find("table", {"class": "anime-seasonal-byseason"})
+    archive = table.find_all('a')
+    archiveList = []
+    for item in archive:
+        if '/anime/season' in item['href']:
+            archiveList.append({'date':item.text.strip(), 'url': item['href']})
+
+    currentSeason = archiveList[0]['date']
+    seasonURL = 'https://myanimelist.net/anime/season'
+    userPicked = archiveList[0]['date']
+    if(request.method == 'POST'):
+        userPicked = request.form.get('date')
+        userPickedSplit = userPicked.split(' ')
+        seasonURL = 'https://myanimelist.net/anime/season/{0}/{1}'.format(userPickedSplit[1], userPickedSplit[0].lower())
+        print(seasonURL)
+    anime_data = scrape_anime_data(seasonURL)
+    # Prepare data for plotting
+    titles = [anime['title'][:40] for anime in anime_data]
+    ratings = [float(anime['rating']) if anime['rating'] != 'N/A' else 0 for anime in anime_data]
+    episodes = [int(anime['episodes']) if anime['episodes'] != 'N/A' else 0 for anime in anime_data]
+
+    return render_template('graph.html', titles=titles, ratings=ratings, episodes=episodes, archive=archiveList, selectedSeason=userPicked)
+
+
+def scrape_anime_data(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    anime_data = []
+    for anime in soup.find_all('div', class_='seasonal-anime'):
+        title = anime.find('a', class_='link-title').text.strip()
+        rating = anime.find('span', class_='js-score').text.strip() if anime.find('span', class_='js-score') else 'N/A'
+        epSearch = anime.find_all('span')
+        episodes = ''
+        for epSearchItem in epSearch:
+            
+            if ' ep' in epSearchItem.text:
+                episodes = epSearchItem.text.split(' ')[0].strip().replace('?','0')
+                break
+            else:
+                episodes = 'N/A'
+        anime_data.append({'title': title, 'rating': rating, 'episodes': episodes})
+    return anime_data
+
 
 if __name__ == "__main__":
     app.run(debug=True)
