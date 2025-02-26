@@ -10,26 +10,30 @@
             font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
     <h1>Anime Ratings and Number of Episodes For {{ selectedSeason }}</h1>
     <form action="/graph" method="POST">
-        
-        <select style="font-size: 20px;" name="date" id="browsers">
+        <label for="date">Season</label>
+        <select style="font-size: 20px;" name="date" onchange="this.form.submit()">
+            <option  value=""></option>
             {% for arch in archive %}
             <option  value="{{ arch.date }}">{{ arch.date }}</option>
             {% endfor %}
         </select>
-        <input style="font-size: 20px;" type="submit">
       </form>
     <h2>Popularity</h2>
-    <div style="width: 100%;"><canvas id="membersChart" width="400" height="800"></canvas></div>
+    <div style="width: 100%;"><canvas id="membersChart" width="400" height="900"></canvas></div>
     <h2>Ratings</h2>
-    <div style="width: 100%;"><canvas id="ratingsChart" width="400" height="800" ></canvas></div>
+    <div style="width: 100%;"><canvas id="ratingsChart" width="400" height="900" ></canvas></div>
     <h2>Number of Episodes</h2>
-    <div style="width: 100%;"><canvas id="episodesChart" width="400" height="800"></canvas></div>
+    <div style="width: 100%;"><canvas id="episodesChart" width="400" height="900"></canvas></div>
 
     <script>
+        $('[name="date"]').change(function() {
+            $(this).closest('form').submit();
+        });
         // Ratings Chart
         var ctx = document.getElementById('ratingsChart').getContext('2d');
         var ratingsChart = new Chart(ctx, {
@@ -52,6 +56,11 @@
                     x: {
                         min: 0,
                         max: 10,
+                    },
+                    y: {
+                        ticks: {
+                            autoSkip: false
+                        }
                     }
                 }
             }
@@ -78,6 +87,9 @@
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: {
+                            autoSkip: false
+                        }
                     }
                 }
             }
@@ -104,6 +116,9 @@
                 scales: {
                     y: {
                         beginAtZero: true,
+                        ticks: {
+                            autoSkip: false
+                        }
                     }
                 }
             }
