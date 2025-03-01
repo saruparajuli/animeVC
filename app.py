@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
+import matplotlib.pyplot as plt
+import io
+import base64
 from flask_caching import Cache
 
 app = Flask(__name__)
@@ -138,14 +141,16 @@ def graph():
     season_search_resp = requests.get(seasonListUrl, headers=HEADERS)
     search_soup = BeautifulSoup(season_search_resp.text, "html.parser")
     table = search_soup.find("table", {"class": "anime-seasonal-byseason"})
-    archive = table.find_all('a')
+    trList = table.find_all('tr')
     archiveList = []
-    for item in archive:
-        if '/anime/season' in item['href']:
-            archiveList.append({'date':item.text.strip(), 'url': item['href']})
+    for tr in trList:
+        aList = tr.find_all('a')
+        for i in range(len(aList)-1, -1, -1):
+            if '/anime/season' in aList[i]['href']:
+                archiveList.append({'date':aList[i].text.strip(), 'url': aList[i]['href']})
 
     currentSeason = archiveList[0]['date']
-    seasonURL = 'https://myanimelist.net/anime/season'
+    seasonURL = archiveList[0]['url']
     userPicked = archiveList[0]['date']
     if(request.method == 'POST'):
         userPicked = request.form.get('date')
@@ -163,7 +168,7 @@ def graph():
 
 def scrape_anime_data(url):
     response = requests.get(url)
-    soup = BeautifulSoup(response.text.split('TV (Continuing)')[0], 'html.parser')
+    soup = BeautifulSoup(response.text.split('anime-header')[1], 'html.parser')
     anime_data = []
     for anime in soup.find_all('div', class_='seasonal-anime'):
         title = anime.find('a', class_='link-title').text.strip()

@@ -44,15 +44,36 @@
         $('[name="date"]').change(function() {
             $(this).closest('form').submit();
         });
+
+        // Sort ratings
+        const titleValues = {{ titles|tojson }};
+        const ratingsValues = {{ ratings|tojson }};
+        const episodesValues = {{ episodes|tojson }};
+
+        let mergedRatings = titleValues.map((title, i) => {
+            return {"title": titleValues[i], "rating": ratingsValues[i] }
+        });
+        const ratingsSort = mergedRatings.sort(function (b, a) {
+            return a.rating - b.rating
+        });
+        const rtng = [];
+        const ttle = [];
+
+        for (i = 0; i < ratingsSort.length; i++) {
+            ttle.push(ratingsSort[i].title)
+            rtng.push(ratingsSort[i].rating);
+        }
+        
+
         // Ratings Chart
         var ctx = document.getElementById('ratingsChart').getContext('2d');
         var ratingsChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: {{ titles|tojson }},
+                labels: ttle,
                 datasets: [{
                     label: 'Ratings',
-                    data: {{ ratings|tojson }},
+                    data: rtng,
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
@@ -76,15 +97,31 @@
             }
         });
 
+        // Sort episodes
+        let mergedEpisodes = titleValues.map((title, i) => {
+            return {"title": titleValues[i], "episode": episodesValues[i] }
+        });
+        const episodesSort = mergedEpisodes.sort(function (b, a) {
+            return a.episode - b.episode;
+        });
+        console.log(episodesSort);
+        const epsd = [];
+        const episodeTitles = [];
+
+        for (i = 0; i < episodesSort.length; i++) {
+            episodeTitles.push(episodesSort[i].title);
+            epsd.push(episodesSort[i].episode);
+        }
+
         // Episodes Chart
         var ctx2 = document.getElementById('episodesChart').getContext('2d');
         var episodesChart = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: {{ titles|tojson }},
+                labels: episodeTitles,
                 datasets: [{
                     label: 'Number of Episodes',
-                    data: {{ episodes|tojson }},
+                    data: epsd,
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
