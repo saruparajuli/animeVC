@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request
 import requests
 from bs4 import BeautifulSoup
-import matplotlib.pyplot as plt
-import io
 import base64
 from flask_caching import Cache
 
