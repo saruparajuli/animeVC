@@ -10,24 +10,40 @@
             font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z56SD7N1NK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z56SD7N1NK');
+</script>
 </head>
 <body>
-    <h1>Anime Ratings and Number of Episodes For {{ selectedSeason }}</h1>
+    <h1>Anime Ratings and Number of Episodes</h1>
     <form action="/graph" method="POST">
-        
-        <select style="font-size: 20px;" name="date" id="browsers">
+        <label for="date">Season</label>
+        <select style="font-size: 20px;" name="date" onchange="this.form.submit()">
+            <option  value=""></option>
             {% for arch in archive %}
             <option  value="{{ arch.date }}">{{ arch.date }}</option>
             {% endfor %}
         </select>
-        <input style="font-size: 20px;" type="submit">
       </form>
+    <h1>{{ selectedSeason }}</h1>
+    <h2>Popularity</h2>
+    <div style="width: 100%;"><canvas id="membersChart" width="400" height="900"></canvas></div>
     <h2>Ratings</h2>
-    <div style="width: 100%;"><canvas id="ratingsChart" width="400" height="800" ></canvas></div>
+    <div style="width: 100%;"><canvas id="ratingsChart" width="400" height="900" ></canvas></div>
     <h2>Number of Episodes</h2>
-    <div style="width: 100%;"><canvas id="episodesChart" width="400" height="800"></canvas></div>
+    <div style="width: 100%;"><canvas id="episodesChart" width="400" height="900"></canvas></div>
 
     <script>
+        $('[name="date"]').change(function() {
+            $(this).closest('form').submit();
+        });
         // Ratings Chart
         var ctx = document.getElementById('ratingsChart').getContext('2d');
         var ratingsChart = new Chart(ctx, {
@@ -43,19 +59,19 @@
                 }]
             },
             options: {
+                indexAxis: 'y',
                 maintainAspectRatio: false,
                 responsive: true,
                 scales: {
-                    y: {
+                    x: {
                         min: 0,
                         max: 10,
                     },
-                    x: {
+                    y: {
                         ticks: {
-                            minRotation: 90
+                            autoSkip: false
                         }
                     }
-
                 }
             }
         });
@@ -75,15 +91,43 @@
                 }]
             },
             options: {
+                indexAxis: 'y',
                 maintainAspectRatio: false,
                 responsive: true,
                 scales: {
                     y: {
                         beginAtZero: true,
-                    },
-                    x: {
                         ticks: {
-                            minRotation: 90
+                            autoSkip: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Episodes Chart
+        var ctx2 = document.getElementById('membersChart').getContext('2d');
+        var episodesChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: {{ titles|tojson }},
+                datasets: [{
+                    label: 'Number of Members',
+                    data: {{ members|tojson }},
+                    backgroundColor: 'rgba(192, 42, 75, 0.2)',
+                    borderColor: 'rgba(192, 42, 75, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                maintainAspectRatio: false,
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            autoSkip: false
                         }
                     }
                 }

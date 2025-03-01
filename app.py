@@ -109,7 +109,6 @@ def search():
     links = search_soup.find_all("a", href=lambda href: href and "/character/" in href)
     for i in range(1, len(links)-1, 2) :
         try:
-            print(links[i-1])
             data.append((links[i-1]['href'].split('/character/')[1].split('/')[0], links[i].text.strip(), links[i-1].find('img')['data-src'].replace('/r/42x62/images/', '/images/') ))
         except:
             continue
@@ -135,7 +134,6 @@ def build(id,name):
     mind_map = build_mind_map(voice_actors)
     return render_template("mindmap.html", mind_map_data=mind_map, character=charName)
 
-
 @app.route('/graph', methods=["GET", "POST"])
 def graph():
 
@@ -156,22 +154,34 @@ def graph():
         userPicked = request.form.get('date')
         userPickedSplit = userPicked.split(' ')
         seasonURL = 'https://myanimelist.net/anime/season/{0}/{1}'.format(userPickedSplit[1], userPickedSplit[0].lower())
-        print(seasonURL)
     anime_data = scrape_anime_data(seasonURL)
     # Prepare data for plotting
     titles = [anime['title'][:40] for anime in anime_data]
     ratings = [float(anime['rating']) if anime['rating'] != 'N/A' else 0 for anime in anime_data]
     episodes = [int(anime['episodes']) if anime['episodes'] != 'N/A' else 0 for anime in anime_data]
+    members = [int(anime['members']) if anime['members'] != 'N/A' else 0 for anime in anime_data]
 
-    return render_template('graph.html', titles=titles, ratings=ratings, episodes=episodes, archive=archiveList, selectedSeason=userPicked)
+    return render_template('graph.html', titles=titles, ratings=ratings, episodes=episodes, members=members, archive=archiveList, selectedSeason=userPicked)
 
 
 def scrape_anime_data(url):
     response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text.split('TV (Continuing)')[0], 'html.parser')
     anime_data = []
     for anime in soup.find_all('div', class_='seasonal-anime'):
         title = anime.find('a', class_='link-title').text.strip()
+        members = anime.find('div', class_='scormem-item member').text.strip()
+        if '.' in members:
+            if 'K' in members:
+                members = members.replace('K', '00')
+            if 'M' in members:
+                members = members.replace('M', '00000')
+            members = members.replace('.', '')
+        else:
+            if 'K' in members:
+                members = members.replace('K', '000')
+            if 'M' in members:
+                members = members.replace('M', '000000')
         rating = anime.find('span', class_='js-score').text.strip() if anime.find('span', class_='js-score') else 'N/A'
         epSearch = anime.find_all('span')
         episodes = ''
@@ -182,7 +192,7 @@ def scrape_anime_data(url):
                 break
             else:
                 episodes = 'N/A'
-        anime_data.append({'title': title, 'rating': rating, 'episodes': episodes})
+        anime_data.append({'title': title, 'rating': rating, 'episodes': episodes, 'members': members})
     return anime_data
 
 
